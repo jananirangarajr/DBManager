@@ -1,18 +1,20 @@
 package com.thinkbig.dbmanager;
 
 import com.thinkbig.dbmanager.filemanager.FileManager;
+import com.thinkbig.dbmanager.jdbcmanager.JDBCMananger;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.net.FileNameMap;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-public class main {
+public class DBManager {
     static String fileLoc;
     static String db;
     static int port;
     static String ip;
+    static String userName;
+    static char[] password;
     public static void main(String args[])
     {
         //Needed Input form the user
@@ -26,7 +28,9 @@ public class main {
         port = sc.nextInt();
         System.out.println("DB server URL");
         ip = sc.next();
-
+        System.out.println("DB UserName");
+        userName = sc.next();
+        password = System.console().readPassword("DB password");
         /** logic starts here **/
 
         try
@@ -44,6 +48,7 @@ public class main {
                     }
                     System.out.println("canonical path"+file.getCanonicalPath()+" "+file.getCanonicalFile());
                 }
+                new JDBCMananger().getDBConnection(db,port,ip);
                 new FileManager().parseFiles(files,excludeFilesList);
             }
             else

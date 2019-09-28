@@ -1,15 +1,15 @@
 package com.thinkbig.dbmanager;
 
 public class DBManagerBean {
-    static String fileLoc;
-    static String db;
+    static private String fileLoc;
+    static private String db;
 
-    static String userName;
-    static char[] password;
+    static private String userName;
+    static private char[] password;
 
     static private int port;
     static private String ip;
-    
+
 
     public String getDb() {
         return db;

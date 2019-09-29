@@ -9,6 +9,7 @@ public class DBManagerBean {
 
     static private int port;
     static private String ip;
+    private String database;
 
 
     public String getDb() {

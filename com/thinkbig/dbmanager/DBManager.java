@@ -30,8 +30,7 @@ public class DBManager {
                         excludeFilesList.add(file.getName());
                     }
                 }
-               new JDBCMananger().getDBConnection(dbBean);
-               new FileManager().parseFiles(files,excludeFilesList);
+               new FileManager(dbBean).parseFiles(files,excludeFilesList);
             }
             else
             {
@@ -55,6 +54,9 @@ public class DBManager {
         }
     }
 
+    /**
+     *
+     */
     private static void getUserInput() {
         System.out.print("Enter the json files location : ");
         Scanner sc = new Scanner(System.in);
@@ -68,8 +70,8 @@ public class DBManager {
         DBManagerBean.setIp(sc.next());
         System.out.println("DB UserName");
         DBManagerBean.setUserName(sc.next());
-        DBManagerBean.setPassword(System.console().readPassword("DB password"));
-//        System.out.println("password");
-//        DBManagerBean.setPassword(sc.next().toCharArray());
+        //DBManagerBean.setPassword(System.console().readPassword("DB password"));
+        System.out.println("password");
+        DBManagerBean.setPassword(sc.next().toCharArray());
     }
 }

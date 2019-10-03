@@ -52,6 +52,8 @@ public class JDBCMananger {
             driverName = "com.mysql.jdbc.Driver";
             serverURL = "jdbc:mysql://"+dbBean.getIp()+":"+dbBean.getPort()+"/";
         }
+        if(dbBean.getDatabase() != null && dbBean.getDatabase() != "")
+            serverURL += dbBean.getDatabase();
         String userDetails = getEncryptedUserData(dbBean);
         bean.setStatement(getDBConnection(serverURL,driverName,userDetails));
     }
@@ -66,7 +68,7 @@ public class JDBCMananger {
         String userDetails = null;
         char[] userName = dbBean.getUserName().toCharArray();
         userName = swapArray(userName);
-        char [] password = dbBean.getPassword();
+        char [] password = dbBean.getPassword().clone();
         password = swapArray(password);
         userDetails = String.valueOf(userName)+"###"+String.valueOf(password);
         return  userDetails;
@@ -148,28 +150,12 @@ public class JDBCMananger {
             closeConnection();
         }
     }
-
     /**
      *
-     * @param database
      */
-    //method to openDB
-    public void openDB(String database)
-    {
-        openDatabase(database);
+    public void close() {
+        closeConnection();
     }
-    private void openDatabase(String databaseName)
-    {
-        Statement statement = bean.getStatement();
-        try {
-            statement.executeUpdate("OPEN "+databaseName);
-        } catch (SQLException e) {
-            System.out.println("Error while opening database : ");
-            e.printStackTrace();
-            closeConnection();
-        }
-    }
-
     /**
      *
      */

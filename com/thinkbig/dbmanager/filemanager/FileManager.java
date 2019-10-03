@@ -12,13 +12,14 @@ import org.json.JSONException;
 import org.json.JSONObject;
 public class FileManager {
 
+    private final DBManagerBean dbBean;
     FileManagerBean fileBean = null;
     JDBCMananger jdbcMananger = null;
     public FileManager(DBManagerBean dbBean)
     {
         fileBean = new FileManagerBean();
         jdbcMananger = new JDBCMananger();
-        jdbcMananger.getDBConnection(dbBean);
+        this.dbBean = dbBean;
     }
     // read files one by one and create tables and database
 
@@ -38,11 +39,14 @@ public class FileManager {
                     JSONObject fileObject = new JSONObject(jsonFile);
                     if(fileBean.getDatabase() == null) // to avoid creating database if already created
                     {
+                        jdbcMananger.getDBConnection(dbBean);
                         //method to create database
                         createDatabase(fileObject.get("database").toString());
                         fileBean.setDatabase(fileObject.get("database").toString());
+                        dbBean.setDatabase(fileObject.get("database").toString());
+                        jdbcMananger.close();
                         //connecting to Database created
-                        jdbcMananger.openDB(fileObject.get("database").toString());
+                        jdbcMananger.getDBConnection(dbBean);
                     }
                     if(fileObject.has("extends")) // to skip tables that have foreign key references
                     {
@@ -72,6 +76,7 @@ public class FileManager {
         String columnQuery = "CREATE TABLE "+tableName+" (";
         String constraint = "";
         String primaryconstraint = "";
+        // To construct all the constraints specified for column.
         for(int i= 0 ; i< columns.length(); i++)
         {
             constraint = "";
@@ -88,7 +93,7 @@ public class FileManager {
             columnQuery += constraint;
             //System.out.println("---- constraint ---- "+constraint);
         }
-        columnQuery += primaryconstraint+")";
+        columnQuery += primaryconstraint+")"; //primary constraint added at last
         System.out.println("---- columnQuery ----"+columnQuery);
         jdbcMananger.executeSQLUpdate(columnQuery);
     }

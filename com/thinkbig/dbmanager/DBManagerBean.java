@@ -59,4 +59,12 @@ public class DBManagerBean {
     public static void setFileLoc(String fileLoc) {
         DBManagerBean.fileLoc = fileLoc;
     }
+
+    public String getDatabase() {
+        return database;
+    }
+
+    public void setDatabase(String database) {
+        this.database = database;
+    }
 }

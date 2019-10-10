@@ -75,7 +75,8 @@ public class FileManager {
         JSONArray columns = (JSONArray) fileObject.get("columns");
         String columnQuery = "CREATE TABLE "+tableName+" (";
         String constraint = "";
-        String primaryconstraint = "";
+        String primaryconstraint = "PRIMARY KEY(";
+        String uniqueConstraint = "UNIQUE(";
         // To construct all the constraints specified for column.
         for(int i= 0 ; i< columns.length(); i++)
         {
@@ -87,13 +88,19 @@ public class FileManager {
                 JSONObject constraints = (JSONObject) columnObject.get("constraints");
                 constraint = constructConstraint(constraints);
                 if(constraints.has("primary_key"))
-                    primaryconstraint += contructPrimaryConstraint(constraints, columnObject.get("name").toString());
+                {
+                    primaryconstraint += contructPrimaryConstraint(constraints, columnObject.get("name").toString(),primaryconstraint);
+                }
+                if(constraints.has("unique"))
+                {
+                    uniqueConstraint += constructUniqueConstraint(constraints,columnObject.get("name").toString(),uniqueConstraint);
+                }
             }
             constraint += ",";
             columnQuery += constraint;
             //System.out.println("---- constraint ---- "+constraint);
         }
-        columnQuery += primaryconstraint+")"; //primary constraint added at last
+        columnQuery += uniqueConstraint+")"+", "+primaryconstraint+")"+")"; //primary constraint added at last
         System.out.println("---- columnQuery ----"+columnQuery);
         jdbcMananger.executeSQLUpdate(columnQuery);
     }
@@ -105,10 +112,29 @@ public class FileManager {
      * @return
      * @throws JSONException
      */
-    private String contructPrimaryConstraint(JSONObject constraints, String columnName) throws JSONException {
+    private String constructUniqueConstraint(JSONObject constraints, String columnName, String uniqueConstraint) throws JSONException {
         String constraint = "";
+        if(!uniqueConstraint.equalsIgnoreCase("UNIQUE("))
+            constraint = ",";
+        if(constraints.has("unique")){
+            constraint += " "+(constraints.get("unique").equals(true)? columnName:" ");
+        }
+        return constraint;
+    }
+
+    /**
+     *
+     * @param constraints
+     * @param columnName
+     * @return
+     * @throws JSONException
+     */
+    private String contructPrimaryConstraint(JSONObject constraints, String columnName, String primaryConstraint) throws JSONException {
+        String constraint = "";
+        if(!primaryConstraint.equalsIgnoreCase("PRIMARY KEY("))
+            constraint = ",";
         if(constraints.has("primary_key")){
-            constraint += " "+(constraints.get("primary_key").equals(true)? ("PRIMARY KEY("+columnName+")"):" ");
+            constraint += " "+(constraints.get("primary_key").equals(true)? columnName:" ");
         }
         return constraint;
     }
@@ -123,10 +149,7 @@ public class FileManager {
     {
         String constraint =  "";
             if (constraints.has("null")) {
-                constraint += " "+(constraints.get("null").equals(false) ? "" : "NOT NULL");
-            }
-            if(constraints.has("unique")){
-                constraint += " "+(constraints.get("unique").equals(true)? "UNIQUE":"");
+                constraint += " "+(constraints.get("null").equals(true) ? "" : "NOT NULL");
             }
             if(constraints.has("default"))
             {

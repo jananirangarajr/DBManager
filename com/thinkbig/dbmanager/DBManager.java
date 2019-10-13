@@ -1,7 +1,6 @@
 package com.thinkbig.dbmanager;
 
 import com.thinkbig.dbmanager.filemanager.FileManager;
-import com.thinkbig.dbmanager.jdbcmanager.JDBCMananger;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -55,7 +54,7 @@ public class DBManager {
     }
 
     /**
-     *
+     *Method to get input Data for json files directory and DB Details
      */
     private static void getUserInput() {
         System.out.print("Enter the json files location : ");
@@ -73,5 +72,7 @@ public class DBManager {
         //DBManagerBean.setPassword(System.console().readPassword("DB password"));
         System.out.println("password");
         DBManagerBean.setPassword(sc.next().toCharArray());
+        System.out.println("Database Name");
+        DBManagerBean.setDatabase(sc.next());
     }
 }

@@ -6,6 +6,7 @@ import java.sql.*;
 
 public class JDBCMananger {
     JDBCBean bean = null;
+    public static boolean isDatabaseCreated = false;
     public JDBCMananger()
     {
         bean = new JDBCBean();
@@ -18,8 +19,7 @@ public class JDBCMananger {
      * @param userDetails
      * @return
      */
-    private Statement getDBConnection(String serverURL, String driverName, String userDetails)
-    {
+    private void getDBConnection(String serverURL, String driverName, String userDetails) {
         Connection connection = null;
         Statement statement = null;
         try
@@ -27,13 +27,14 @@ public class JDBCMananger {
             Class.forName(driverName);
             connection = DriverManager.getConnection(serverURL,String.valueOf(swapArray(userDetails.substring(0,userDetails.indexOf('#')).toCharArray())),String.valueOf(swapArray(userDetails.substring(userDetails.indexOf('#')+3).toCharArray())));
             statement = connection.createStatement();
+            bean.setStatement(statement);
+            bean.setConnection(connection);
         }
         catch(Exception exception) {
             System.out.println("Exception Occured while getting DBConnection : ");
             exception.printStackTrace();
             closeConnection();
         }
-        return statement;
     }
     //getConnection
 
@@ -52,10 +53,11 @@ public class JDBCMananger {
             driverName = "com.mysql.jdbc.Driver";
             serverURL = "jdbc:mysql://"+dbBean.getIp()+":"+dbBean.getPort()+"/";
         }
-        if(dbBean.getDatabase() != null && dbBean.getDatabase() != "")
+        if(isDatabaseCreated) {
             serverURL += dbBean.getDatabase();
+        }
         String userDetails = getEncryptedUserData(dbBean);
-        bean.setStatement(getDBConnection(serverURL,driverName,userDetails));
+        getDBConnection(serverURL,driverName,userDetails);
     }
 
     /**
@@ -178,6 +180,27 @@ public class JDBCMananger {
                 e.printStackTrace();
             }
         }
+    }
+    public boolean tableExists(String tableName)
+    {
+        DatabaseMetaData dbm = null;
+        try {
+            dbm = bean.getConnection().getMetaData();
+            // check if table is there
+            ResultSet tables = dbm.getTables(null, null, tableName, null);
+            if (tables.next()) {
+                // Table exists
+                return true;
+            }
+            else {
+                // Table does not exist
+                return false;
+            }
+        } catch (SQLException e) {
+            System.out.println("Exception while getting Metadata : ");
+            e.printStackTrace();
+        }
+        return false;
     }
 }
 

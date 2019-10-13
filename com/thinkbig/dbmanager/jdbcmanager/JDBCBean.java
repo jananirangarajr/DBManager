@@ -24,4 +24,5 @@ public class JDBCBean {
 
     private Connection connection;
 
+
 }

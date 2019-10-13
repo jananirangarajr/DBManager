@@ -1,5 +1,6 @@
 package com.thinkbig.dbmanager.filemanager;
 
+import java.io.File;
 import java.util.ArrayList;
 
 public class FileManagerBean {
@@ -13,14 +14,14 @@ public class FileManagerBean {
     public void setDatabase(String database) {
         this.database = database;
     }
-    private ArrayList<String> extendedTableNames = new ArrayList<String>();
+    private ArrayList<File> extendedTableNames = new ArrayList<File>();
 
-    public ArrayList<String> getExtendedTableNames() {
+    public ArrayList<File> getExtendedTableNames() {
         return extendedTableNames;
     }
 
-    public void setExtendedTableNames(String tableName) {
-        this.extendedTableNames.add(tableName);
+    public void setExtendedTableNames(File fileName) {
+        this.extendedTableNames.add(fileName);
     }
 
     private ArrayList<String> tableNames = new ArrayList<String>();

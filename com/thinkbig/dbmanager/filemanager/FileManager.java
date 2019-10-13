@@ -30,6 +30,9 @@ public class FileManager {
      */
     public void parseFiles(File[] files, ArrayList<String> excludeFileList)
     {
+        //create database
+        createDatabase(dbBean.getDatabase());
+        fileBean.setDatabase(dbBean.getDatabase());
         for(File file : files)
         {
             if(!excludeFileList.contains(file.getName()))
@@ -37,20 +40,18 @@ public class FileManager {
                 try {
                     String jsonFile = new String(Files.readAllBytes(file.toPath()));
                     JSONObject fileObject = new JSONObject(jsonFile);
-                    if(fileBean.getDatabase() == null) // to avoid creating database if already created
-                    {
-                        jdbcMananger.getDBConnection(dbBean);
-                        //method to create database
-                        createDatabase(fileObject.get("database").toString());
-                        fileBean.setDatabase(fileObject.get("database").toString());
-                        dbBean.setDatabase(fileObject.get("database").toString());
-                        jdbcMananger.close();
-                        //connecting to Database created
-                        jdbcMananger.getDBConnection(dbBean);
-                    }
+                    //connecting to Database created
+                    jdbcMananger.getDBConnection(dbBean);
                     if(fileObject.has("extends")) // to skip tables that have foreign key references
                     {
-                        fileBean.setExtendedTableNames(file.getName());
+                        String[] extendedTablesList = fileObject.get("extends").toString().split(",");
+                        if(checkTableNameExists(extendedTablesList))
+                        {
+                            createTable(fileObject);
+                        }
+                        else {
+                            fileBean.setExtendedTableNames(file);
+                        }
                     }
                     else {
                         // create table in database created.
@@ -63,10 +64,56 @@ public class FileManager {
                 }
             }
         }
+        createTableWithFkReference();
     }
+
     /**
-     *
-     * @param fileObject
+     * checks wheather all the dependency tables exists in database.If all dependency table exsists return true.
+     * @param extendedTablesList
+     * @return
+     */
+    private boolean checkTableNameExists(String[] extendedTablesList) {
+        for(int i = 0; i < extendedTablesList.length ; i++)
+        {
+            if(!jdbcMananger.tableExists(extendedTablesList[i]))
+                return false;
+        }
+        return true;
+    }
+
+    /**
+     *For first time parsing json files, If the dependency table not exists in db then maintain a list and create it later.
+     */
+
+    private void createTableWithFkReference()  {
+        ArrayList<File> files = (ArrayList<File>) fileBean.getExtendedTableNames().clone();
+        for(File file : files)
+        {
+            String jsonFile = null;
+            try {
+                jsonFile = new String(Files.readAllBytes(file.toPath()));
+                JSONObject fileObject = new JSONObject(jsonFile);
+                if(fileObject.has("extends")) // to skip tables that have foreign key references
+                {
+                    String[] extendedTablesList = fileObject.get("extends").toString().split(",");
+                    if(checkTableNameExists(extendedTablesList))
+                    {
+                        createTable(fileObject);
+                        fileBean.getExtendedTableNames().remove(file);
+                    }
+                }
+            } catch (IOException | JSONException e) {
+                System.out.println("Exception occured while reading JSON File : "+file.getName()+" : ");
+                e.printStackTrace();
+            }
+        }
+        if(!fileBean.getExtendedTableNames().isEmpty())
+            createTableWithFkReference();
+    }
+
+    /**
+     *Reads the Json file and construct the Query with all the constraints specified. Executes the Query and create the table in DATABASE specified.
+     * @param fileObject - json file
      * @throws JSONException
      */
     private void createTable(JSONObject fileObject) throws JSONException
@@ -77,6 +124,7 @@ public class FileManager {
         String constraint = "";
         String primaryconstraint = "PRIMARY KEY(";
         String uniqueConstraint = "UNIQUE(";
+        String fkConstraint = "";
         // To construct all the constraints specified for column.
         for(int i= 0 ; i< columns.length(); i++)
         {
@@ -95,13 +143,28 @@ public class FileManager {
                 {
                     uniqueConstraint += constructUniqueConstraint(constraints,columnObject.get("name").toString(),uniqueConstraint);
                 }
+                if(constraints.has("foreign_key"))
+                {
+                    String foreignKeyValue = constraints.get("foreign_key").toString();
+                    foreignKeyValue = foreignKeyValue.substring(0,foreignKeyValue.indexOf('.'))+"("+foreignKeyValue.substring((foreignKeyValue.indexOf('.')+1),(foreignKeyValue.length()))+")";
+                    fkConstraint += "FOREIGN KEY ("+columnObject.get("name")+") REFERENCES "+foreignKeyValue+",";
+                }
             }
             constraint += ",";
             columnQuery += constraint;
             //System.out.println("---- constraint ---- "+constraint);
         }
-        columnQuery += uniqueConstraint+")"+", "+primaryconstraint+")"+")"; //primary constraint added at last
+        primaryconstraint = primaryconstraint.equals("PRIMARY KEY(")?"":primaryconstraint+")";//assign emptystring if there is no primary key.
+        columnQuery += primaryconstraint.equals("")?"":primaryconstraint+","; //append ',' only if primary key exists
+
+        uniqueConstraint = uniqueConstraint.equals("UNIQUE(")?"":uniqueConstraint+")";//assign emptystring if there is no uniue key.
+        columnQuery += uniqueConstraint.equals("")?"":uniqueConstraint+","; //append ',' only if unique key exists
+
+        columnQuery += fkConstraint.equals("")?"":fkConstraint.substring(0,fkConstraint.length()-1); //don't append ',' for fk as this is the last one to append
+
+        columnQuery = fkConstraint.equals("")?columnQuery.substring(0,columnQuery.length()-1)+")":columnQuery+")";// trim the trailing ',' in columnQuery only if there is no fk as we don't append ',' for FK.[if ', is appended for fk also, need to remove 2','char if fk not exsists']
         System.out.println("---- columnQuery ----"+columnQuery);
+
         jdbcMananger.executeSQLUpdate(columnQuery);
     }
 
@@ -157,14 +220,16 @@ public class FileManager {
             }
         return constraint;
     }
-    //create database
 
     /**
      *
      * @param database
      */
     private void createDatabase(String database) {
+        jdbcMananger.getDBConnection(dbBean);
         String query = "CREATE DATABASE "+database;
         jdbcMananger.executeSQLUpdate(query);
+        jdbcMananger.close();
+        JDBCMananger.isDatabaseCreated = true;
     }
 }

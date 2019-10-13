@@ -9,7 +9,7 @@ public class DBManagerBean {
 
     static private int port;
     static private String ip;
-    private String database;
+    static private String database;
 
 
     public String getDb() {
@@ -64,7 +64,7 @@ public class DBManagerBean {
         return database;
     }
 
-    public void setDatabase(String database) {
-        this.database = database;
+    public static void setDatabase(String database) {
+        DBManagerBean.database = database;
     }
 }

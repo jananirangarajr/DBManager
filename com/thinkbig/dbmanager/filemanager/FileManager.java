@@ -163,7 +163,16 @@ public class FileManager {
         primaryconstraint = primaryconstraint.equals("PRIMARY KEY(")?"":primaryconstraint+")";//assign empty string if there is no primary key.
         columnQuery += primaryconstraint.equals("")?"":primaryconstraint+","; //append ',' only if primary key exists
 
-        uniqueConstraint = uniqueConstraint.equals("UNIQUE(")?"":uniqueConstraint+")";//assign empty string if there is no uniue key.
+        if(fileObject.has("combined_unique"))
+        {
+            JSONArray combinedUnique = fileObject.getJSONArray("combined_unique");
+            String uniqueColumns = "";
+            for(int i =0 ; i < combinedUnique.length(); i++) {
+                uniqueColumns += combinedUnique.get(i) + ",";
+            }
+            uniqueConstraint+= uniqueColumns.substring(0,uniqueColumns.length()-1);//to trim the last ',' in string
+        }
+        uniqueConstraint = uniqueConstraint.equals("UNIQUE(")?"":uniqueConstraint+")";//assign empty string if there is no unique key.
         columnQuery += uniqueConstraint.equals("")?"":uniqueConstraint+","; //append ',' only if unique key exists
 
         columnQuery += fkConstraint.equals("")?"":fkConstraint.substring(0,fkConstraint.length()-1); //don't append ',' for fk as this is the last one to append

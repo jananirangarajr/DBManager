@@ -24,7 +24,7 @@ public class FileManager {
     // read files one by one and create tables and database
 
     /**
-     *
+     *This method reads the json file in specified directory and creates table
      * @param files
      * @param excludeFileList
      */
@@ -45,7 +45,7 @@ public class FileManager {
                     if(fileObject.has("extends")) // to skip tables that have foreign key references
                     {
                         String[] extendedTablesList = fileObject.get("extends").toString().split(",");
-                        if(checkTableNameExists(extendedTablesList))
+                        if(checkTableNameExists(extendedTablesList)) // to check if the extended table already exists and create dependency table
                         {
                             createTable(fileObject);
                         }
@@ -64,11 +64,12 @@ public class FileManager {
                 }
             }
         }
+        //create table which has foreign key references
         createTableWithFkReference();
     }
 
     /**
-     * checks wheather all the dependency tables exists in database.If all dependency table exsists return true.
+     * checks wheather all the dependency tables exists in database.If all dependency table exists return true.
      * @param extendedTablesList
      * @return
      */
@@ -82,7 +83,7 @@ public class FileManager {
     }
 
     /**
-     *For first time parsing json files, If the dependency table not exists in db then maintain a list and create it later.
+     *Create table which has foreign key references.
      */
 
     private void createTableWithFkReference()  {
@@ -133,31 +134,36 @@ public class FileManager {
             columnQuery = columnQuery+columnObject.get("name")+" "+columnObject.get("type");
 
             if(columnObject.has("constraints")) {
-                JSONObject constraints = (JSONObject) columnObject.get("constraints");
-                constraint = constructConstraint(constraints);
-                if(constraints.has("primary_key"))
+                JSONObject constraintsObject = (JSONObject) columnObject.get("constraints");
+                constraint = constructConstraint(constraintsObject);
+                if(constraintsObject.has("primary_key"))
                 {
-                    primaryconstraint += contructPrimaryConstraint(constraints, columnObject.get("name").toString(),primaryconstraint);
+                    primaryconstraint += contructPrimaryConstraint(constraintsObject, columnObject.get("name").toString(),primaryconstraint);
                 }
-                if(constraints.has("unique"))
+                if(constraintsObject.has("unique"))
                 {
-                    uniqueConstraint += constructUniqueConstraint(constraints,columnObject.get("name").toString(),uniqueConstraint);
+                    uniqueConstraint += constructUniqueConstraint(constraintsObject,columnObject.get("name").toString(),uniqueConstraint);
                 }
-                if(constraints.has("foreign_key"))
+                if(constraintsObject.has("foreign_key"))
                 {
-                    String foreignKeyValue = constraints.get("foreign_key").toString();
+                    String foreignKeyValue = constraintsObject.get("foreign_key").toString();
                     foreignKeyValue = foreignKeyValue.substring(0,foreignKeyValue.indexOf('.'))+"("+foreignKeyValue.substring((foreignKeyValue.indexOf('.')+1),(foreignKeyValue.length()))+")";
-                    fkConstraint += "FOREIGN KEY ("+columnObject.get("name")+") REFERENCES "+foreignKeyValue+",";
+                    fkConstraint += "FOREIGN KEY ("+columnObject.get("name")+") REFERENCES "+foreignKeyValue;
+                    if(constraintsObject.has("cascade"))
+                    {
+                        fkConstraint += " "+constraintsObject.get("cascade")+" cascade";
+                    }
+                    fkConstraint += ",";
                 }
             }
             constraint += ",";
             columnQuery += constraint;
             //System.out.println("---- constraint ---- "+constraint);
         }
-        primaryconstraint = primaryconstraint.equals("PRIMARY KEY(")?"":primaryconstraint+")";//assign emptystring if there is no primary key.
+        primaryconstraint = primaryconstraint.equals("PRIMARY KEY(")?"":primaryconstraint+")";//assign empty string if there is no primary key.
         columnQuery += primaryconstraint.equals("")?"":primaryconstraint+","; //append ',' only if primary key exists
 
-        uniqueConstraint = uniqueConstraint.equals("UNIQUE(")?"":uniqueConstraint+")";//assign emptystring if there is no uniue key.
+        uniqueConstraint = uniqueConstraint.equals("UNIQUE(")?"":uniqueConstraint+")";//assign empty string if there is no uniue key.
         columnQuery += uniqueConstraint.equals("")?"":uniqueConstraint+","; //append ',' only if unique key exists
 
         columnQuery += fkConstraint.equals("")?"":fkConstraint.substring(0,fkConstraint.length()-1); //don't append ',' for fk as this is the last one to append
@@ -169,10 +175,10 @@ public class FileManager {
     }
 
     /**
-     *
+     *construct unique columns query.
      * @param constraints
      * @param columnName
-     * @return
+     * @return String for unique query
      * @throws JSONException
      */
     private String constructUniqueConstraint(JSONObject constraints, String columnName, String uniqueConstraint) throws JSONException {
@@ -186,10 +192,10 @@ public class FileManager {
     }
 
     /**
-     *
+     * construct primary columns query
      * @param constraints
      * @param columnName
-     * @return
+     * @return string for primary part
      * @throws JSONException
      */
     private String contructPrimaryConstraint(JSONObject constraints, String columnName, String primaryConstraint) throws JSONException {
@@ -203,7 +209,7 @@ public class FileManager {
     }
 
     /**
-     *
+     * construct query for constraints specified in json files
      * @param constraints
      * @return
      * @throws JSONException
@@ -222,7 +228,7 @@ public class FileManager {
     }
 
     /**
-     *
+     * creates a database
      * @param database
      */
     private void createDatabase(String database) {

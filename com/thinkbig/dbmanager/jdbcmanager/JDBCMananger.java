@@ -13,11 +13,10 @@ public class JDBCMananger {
     }
 
     /**
-     *
+     * Establish connection with the user specified DB details
      * @param serverURL
      * @param driverName
-     * @param userDetails
-     * @return
+     * @param userDetails combined details of username and password encrypted.
      */
     private void getDBConnection(String serverURL, String driverName, String userDetails) {
         Connection connection = null;
@@ -153,13 +152,13 @@ public class JDBCMananger {
         }
     }
     /**
-     *
+     * Close connection
      */
     public void close() {
         closeConnection();
     }
     /**
-     *
+     * close connection and statement
      */
     //method to close connection
     private void closeConnection()
@@ -181,6 +180,9 @@ public class JDBCMananger {
             }
         }
     }
+    /**
+     * Method to check if already the table exists
+     */
     public boolean tableExists(String tableName)
     {
         DatabaseMetaData dbm = null;

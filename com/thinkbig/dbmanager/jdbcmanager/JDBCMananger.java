@@ -60,11 +60,10 @@ public class JDBCMananger {
     }
 
     /**
-     *
+     *method used to encrypt userName and password(basic implementation)
      * @param dbBean
      * @return
      */
-    //method used to encrypt userName and password(basic implementation)
     private String getEncryptedUserData(DBManagerBean dbBean) {
         String userDetails = null;
         char[] userName = dbBean.getUserName().toCharArray();
@@ -76,7 +75,7 @@ public class JDBCMananger {
     }
 
     /**
-     *
+     *basic swapping to encrypt username and password
      * @param swapArray
      * @return
      */
@@ -97,17 +96,16 @@ public class JDBCMananger {
     }
 
     /**
-     *
+     *method to execute selectQuery
      * @param query
      */
-    //method to execute selectQuery
     public void executeSQL(String query)
     {
         executeSQLStatement(query);
     }
 
     /**
-     *
+     *method to execute selectQuery
      * @param query
      */
     private void executeSQLStatement(String query)
@@ -125,17 +123,16 @@ public class JDBCMananger {
     }
 
     /**
-     *
+     *method to execute update query
      * @param query
      */
-    //method to execute update query
     public void executeSQLUpdate(String query)
     {
         executeUpdateStatement(query);
     }
 
     /**
-     *
+     *method to execute update query
      * @param query
      */
     private void executeUpdateStatement(String query)
@@ -160,7 +157,6 @@ public class JDBCMananger {
     /**
      * close connection and statement
      */
-    //method to close connection
     private void closeConnection()
     {
         if (bean.getConnection() != null) {

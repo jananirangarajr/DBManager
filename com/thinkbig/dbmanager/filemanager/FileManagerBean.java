@@ -33,4 +33,13 @@ public class FileManagerBean {
     public void setTableNames(String tableName) {
         this.tableNames.add(tableName);
     }
+    private ArrayList<File> insertFileObject = new ArrayList<>();
+
+    public ArrayList<File> getInsertFileObject() {
+        return insertFileObject;
+    }
+
+    public void setInsertFileObject(File insertFileObject) {
+        this.insertFileObject.add(insertFileObject);
+    }
 }

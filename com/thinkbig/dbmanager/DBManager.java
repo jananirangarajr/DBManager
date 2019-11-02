@@ -1,6 +1,7 @@
 package com.thinkbig.dbmanager;
 
 import com.thinkbig.dbmanager.filemanager.FileManager;
+import com.thinkbig.dbmanager.jdbcmanager.JDBCMananger;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -49,7 +50,7 @@ public class DBManager {
         }
         finally
         {
-
+            new JDBCMananger().close();
         }
     }
 
@@ -69,9 +70,9 @@ public class DBManager {
         DBManagerBean.setIp(sc.next());
         System.out.println("DB UserName");
         DBManagerBean.setUserName(sc.next());
-        //DBManagerBean.setPassword(System.console().readPassword("DB password"));
-        System.out.println("password");
-        DBManagerBean.setPassword(sc.next().toCharArray());
+        DBManagerBean.setPassword(System.console().readPassword("DB password"));
+        /*System.out.println("password");
+        DBManagerBean.setPassword(sc.next().toCharArray());*/
         System.out.println("Database Name");
         DBManagerBean.setDatabase(sc.next());
     }

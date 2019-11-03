@@ -1,0 +1,26 @@
+{
+  "table_name": "amenities",
+  "columns": [
+    {
+      "name": "amenityid",
+      "type": "bigint",
+      "constraints": {
+        "null": false,
+        "primary_key": true,
+        "unique": true
+      }
+    },
+    {
+      "name": "amenity",
+      "type": "varchar(250)",
+      "constraints": {
+        "null": false
+      }
+    }
+  ],
+  "values": {
+    "amenity":[
+      "Inverter", "window AC", "spilt Ac", "cot", "fan", "light", "geysar", "washing machine", "fridge", "induction stove", "gas stove", "microwave", "kitchen utensils"
+    ]
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "table_name": "owner",
+  "extends": "user_details,flat_details",
+  "columns": [
+    {
+      "name": "ownerid",
+      "type": "bigint",
+      "constraints": {
+        "null": false,
+        "primary_key": true,
+        "unique": true
+      }
+    },
+    {
+      "name": "userid",
+      "type": "bigint",
+      "constraints": {
+        "null": false,
+        "foreign_key": "user_details.userid",
+        "cascade": "on delete"
+      }
+    },
+    {
+      "name": "houseid",
+      "type": "bigint",
+      "constraints": {
+        "null": false,
+        "foreign_key": "flat_details.houseid",
+        "cascade": "on delete"
+      }
+    }
+  ]
+}

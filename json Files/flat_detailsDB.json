@@ -1,0 +1,74 @@
+{
+  "table_name": "flat_details",
+  "columns": [
+    {
+      "name": "houseid",
+      "type": "bigint",
+      "constraints": {
+        "null": false,
+        "primary_key": true,
+        "unique": true
+      }
+    },
+    {
+      "name": "block",
+      "type": "varchar(10)",
+      "constraints": {
+        "null": false
+      }
+    },
+    {
+      "name": "flatNo",
+      "type": "bigint",
+      "constraints": {
+        "null": false
+      }
+    },
+    {
+      "name": "floor",
+      "type": "int",
+      "constraints": {
+        "null": false
+      }
+    },
+    {
+      "name": "maintenance",
+      "type": "bigint",
+      "constraints": {
+        "null": false
+      }
+    },
+    {
+      "name": "isleased",
+      "type": "boolean",
+      "constraints": {
+        "null": false,
+        "default": "false"
+      }
+    },
+    {
+      "name": "rent",
+      "type": "bigint"
+    },
+    {
+      "name": "eb",
+      "type": "bigint"
+    },
+    {
+      "name": "water",
+      "type": "bigint"
+    },
+    {
+      "name": "bedrooms",
+      "type": "bigint"
+    },
+    {
+      "name": "balcony",
+      "type": "bigint"
+    },
+    {
+      "name": "bathrooms",
+      "type": "bigint"
+    }
+  ]
+}

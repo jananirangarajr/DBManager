@@ -1,0 +1,33 @@
+{
+  "table_name": "usercontact",
+  "extends": "user_details",
+  "columns": [
+    {
+      "name": "userid",
+      "type": "bigint",
+      "constraints": {
+        "null": false,
+        "foreign_key": "user_details.userid",
+        "cascade" : "on delete"
+      }
+    },
+    {
+      "name": "contact",
+      "type": "bigint",
+      "constraint": {
+        "null": false
+      }
+    },
+    {
+      "name": "address",
+      "type": "varchar(200)",
+      "constraints": {
+        "null": false
+      }
+    },
+    {
+      "name": "email",
+      "type": "varchar(100)"
+    }
+  ]
+}

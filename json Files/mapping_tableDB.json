@@ -1,0 +1,33 @@
+{
+  "table_name": "userOwnerAssociation",
+  "extends": "user_details,flat_details,owner",
+  "columns": [
+    {
+      "name": "houseid",
+      "type": "bigint",
+      "constraints" : {
+        "foreign_key": "flat_details.houseid",
+        "null": false
+      }
+    },
+    {
+      "name": "ownerid",
+      "type": "bigint",
+      "constraints": {
+        "null": "false",
+        "foreign_key": "owner.ownerid"
+      }
+    },
+    {
+      "name": "userid",
+      "type": "bigint",
+      "constraints": {
+        "null": false,
+        "foreign_key": "user_details.userid"
+      }
+    }
+  ],
+  "combined_unique": [
+    "houseid","ownerid","userid"
+  ]
+}

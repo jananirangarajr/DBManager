@@ -1,0 +1,29 @@
+{
+  "table_name": "amenitiesassociation",
+  "extends": "amenities,flat_details",
+  "columns": [
+    {
+      "name": "amenityid",
+      "type": "bigint",
+      "constraints": {
+        "null": false,
+        "foreign_key": "amenities.amenityid"
+      }
+    },
+    {
+      "name": "houseid",
+      "type": "bigint",
+      "constraints": {
+        "null": false,
+        "foreign_key": "flat_details.houseid"
+      }
+    },
+    {
+      "name": "quantity",
+      "type": "bigint",
+      "constraints": {
+        "default": 0
+      }
+    }
+  ]
+}

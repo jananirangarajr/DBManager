@@ -1,0 +1,45 @@
+{
+  "table_name": "user_details",
+  "columns": [
+    {
+      "name": "userid",
+      "type": "bigint",
+      "constraints": {
+        "null" : false,
+        "primary_key": true,
+        "unique" : true
+      }
+    },
+    {
+      "name": "user_name",
+      "type": "varchar(50)",
+      "constraints": {
+        "null": false,
+        "unique": true
+      }
+    },
+    {
+      "name": "password",
+      "type": "varchar(100)",
+      "constraints": {
+        "null": false
+      }
+    },
+    {
+      "name": "isowner",
+      "type": "boolean",
+      "constraints": {
+        "null": false,
+        "default": true
+      }
+    },
+    {
+      "name": "isadmin",
+      "type": "boolean",
+      "constraints": {
+        "null": false,
+        "default": false
+      }
+    }
+  ]
+}

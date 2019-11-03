@@ -1,0 +1,88 @@
+{
+  "table_name": "eb",
+  "extends": "owner,flat_details,user_details",
+  "columns": [
+    {
+      "name": "ownerid",
+      "type": "bigint",
+      "constraints": {
+        "null": false,
+        "foreign_key": "owner.ownerid"
+      }
+    },
+    {
+      "name": "userid",
+      "type": "bigint",
+      "constraints": {
+        "null": false,
+        "foreign_key": "user_details.userid"
+      }
+    },
+    {
+      "name": "houseid",
+      "type": "bigint",
+      "constraints": {
+        "null": false,
+        "foreign_key": "flat_details.houseid"
+      }
+    },
+    {
+      "name": "year",
+      "type": "bigint",
+      "constraints": {
+        "null": false
+      }
+    },
+    {
+      "name": "jan",
+      "type": "date"
+    },
+    {
+      "name": "feb",
+      "type": "date"
+    },
+    {
+      "name": "mar",
+      "type": "date"
+    },
+    {
+      "name": "april",
+      "type": "date"
+    },
+    {
+      "name": "may",
+      "type": "date"
+    },
+    {
+      "name": "jun",
+      "type": "date"
+    },
+    {
+      "name": "jul",
+      "type": "date"
+    },
+    {
+      "name": "aug",
+      "type": "date"
+    },
+    {
+      "name": "sept",
+      "type": "date"
+    },
+    {
+      "name": "oct",
+      "type": "date"
+    },
+    {
+      "name": "nov",
+      "type": "date"
+    },
+    {
+      "name": "dec",
+      "type": "date"
+    }
+  ],
+  "combined_unique": [
+    "houseid","ownerid","userid"
+  ]
+}
